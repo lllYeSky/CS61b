@@ -8,7 +8,10 @@ import static org.junit.Assert.*;
  * Created by hug.
  */
 public class TestBuggyAList {
-    public static void main(String[] args){randomizedTest();}
+    public static void main(String[] args){
+        randomizedTest();
+        testThreeAddThreeRemove();
+    }
 
     public static void randomizedTest(){
         AListNoResizing<Integer> L = new AListNoResizing<>();
@@ -24,20 +27,38 @@ public class TestBuggyAList {
                 System.out.println("addLast(" + randVal + ")");
             } else if (operationNumber == 1) {
                 // size
-                int size = L.size();
-                System.out.println("size: " + size);
+                int size1 = L.size(), size2 = M.size();
+                System.out.println("size1: " + size1);
+                System.out.println("size2: " + size2);
             }else if(operationNumber == 2){
                 // getLast
                 if(L.size() > 0){
-                    System.out.println("getLast:" + L.getLast());
+                    System.out.println("L.getLast(" + L.getLast() + ")");
+                }
+                if(M.size() > 0){
+                    System.out.println("M.getLast(" + M.getLast() + ")");
                 }
             }else{
                 //removeLast
                 if(L.size() > 0){
-                    System.out.println("getLast:" + L.removeLast());
+                    System.out.println("M.removeLast(" + L.removeLast() + ")");
+                }
+                if(M.size() > 0){
+                    System.out.println("M.removeLast(" + M.removeLast() + ")");
                 }
             }
-
         }
+    }
+    public static void testThreeAddThreeRemove(){
+        AListNoResizing<Integer> L = new AListNoResizing<>();
+        BuggyAList<Integer> M = new BuggyAList<>();
+        L.addLast(3);M.addLast(3);
+        L.addLast(2);M.addLast(2);
+        L.addLast(5);M.addLast(5);
+        assertEquals(L.size(), M.size());
+
+        assertEquals(L.removeLast(), M.removeLast());
+        assertEquals(L.removeLast(), M.removeLast());
+        assertEquals(L.removeLast(), M.removeLast());
     }
 }

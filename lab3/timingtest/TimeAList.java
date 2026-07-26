@@ -22,7 +22,7 @@ public class TimeAList {
     }
 
     public static void timeAListConstruction() {
-        AList<Integer> test = new AList<Integer>();
+        AList<Integer>[] array = (AList<Integer>[]) new AList[10];
         AList<Integer> n = new AList<Integer>();
         AList<Integer> op = new AList<Integer>();
         AList<Double> time = new AList<Double>();
@@ -30,9 +30,10 @@ public class TimeAList {
         for(int i = 0; i<8; i++) {
             n.addLast(x[i]);
             op.addLast(x[i]);
+            array[i] = new AList<>();
             Stopwatch sw = new Stopwatch();
             for (int j = 1; j <= x[i]; j++) {
-                test.addLast(1);
+                array[i].addLast(1);
             }
             double timeInSeconds = sw.elapsedTime();
             time.addLast(timeInSeconds);
