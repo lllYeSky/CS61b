@@ -17,7 +17,7 @@ public class MaxArrayDeque<T> extends ArrayDeque<T>{
         T ma = get(0);
         for (int i = 1; i < size(); i++) {
             T cur = get(i);
-            if (com.compare(ma, cur) > 0) {
+            if (com.compare(ma, cur) < 0) {
                 ma = cur;
             }
         }
@@ -31,7 +31,7 @@ public class MaxArrayDeque<T> extends ArrayDeque<T>{
         T ma = get(0);
         for (int i = 1; i < size(); i++) {
             T cur = get(i);
-            if (c.compare(ma, cur) > 0) {
+            if (c.compare(ma, cur) < 0) {
                 ma = cur;
             }
         }
