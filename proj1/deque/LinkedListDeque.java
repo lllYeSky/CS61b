@@ -7,68 +7,74 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T>{
     private Intnode senb;
     private int size;
 
-    public class Intnode{
-        public Intnode prev;
-        public Intnode next;
-        public T item;
+    private class Intnode {
+        private Intnode prev;
+        private Intnode next;
+        private T item;
     }
 
     private class LLDiterator implements Iterator<T>{
         private Intnode current;
 
-        public LLDiterator(){
+        public LLDiterator() {
             current = senf.next;
         }
 
-        public boolean hasNext(){
-            if(current == senb){
+        public boolean hasNext() {
+            if (current == senb) {
                 return false;
             }
             return true;
         }
 
-        public T next(){
+        public T next() {
             Intnode t = current;
             current = t.next;
             return t.item;
         }
     }
 
-    public LinkedListDeque(){
+    public LinkedListDeque() {
         size = 0;
         senf = new Intnode();
         senb = new Intnode();
-        senf.prev = null; senb.next = null;
-        senf.next = senb; senb.prev = senf;
+        senf.prev = null;
+        senb.next = null;
+        senf.next = senb;
+        senb.prev = senf;
     }
 
     @Override
-    public void addFirst(T item){
+    public void addFirst(T item) {
         Intnode n = new Intnode();
         n.item = item;
-        n.prev = senf; n.next = senf.next;
-        senf.next.prev = n; senf.next = n;
+        n.prev = senf;
+        n.next = senf.next;
+        senf.next.prev = n;
+        senf.next = n;
         size += 1;
     }
 
     @Override
-    public void addLast(T item){
+    public void addLast(T item) {
         Intnode n = new Intnode();
         n.item = item;
-        n.next = senb; n.prev = senb.prev;
-        senb.prev.next = n; senb.prev = n;
+        n.next = senb;
+        n.prev = senb.prev;
+        senb.prev.next = n;
+        senb.prev = n;
         size += 1;
     }
 
     @Override
-    public int size(){
+    public int size() {
         return size;
     }
 
     @Override
-    public void printDeque(){
+    public void printDeque() {
         Intnode in = senf.next;
-        while(in != senb){
+        while (in != senb) {
             System.out.print(in.item + " ");
             in = in.next;
         }
@@ -76,8 +82,8 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T>{
     }
 
     @Override
-    public T removeFirst(){
-        if(size == 0){
+    public T removeFirst() {
+        if (size == 0) {
             return null;
         }
         size--;
@@ -88,8 +94,8 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T>{
     }
 
     @Override
-    public T removeLast(){
-        if(size == 0){
+    public T removeLast() {
+        if (size == 0) {
             return null;
         }
         size--;
@@ -101,29 +107,29 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T>{
 
     @Override
     public T get(int index) {
-        if(size < index + 1){
+        if (size < index + 1) {
             return null;
         }
         Intnode in = senf.next;
-        for(int i = 0; i<index; i++){
+        for (int i = 0; i < index; i++) {
             in = in.next;
         }
         return in.item;
     }
 
-    public Iterator<T> iterator(){
+    public Iterator<T> iterator() {
         return new LLDiterator();
     }
 
-    public boolean equals(Object o){
-        if(this == o){
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
         if (!(o instanceof Deque)) {
             return false;
         }
         Deque<T> other = (Deque<T>) o;
-        if(other.size() != this.size()){
+        if (other.size() != this.size()) {
             return false;
         }
 
@@ -140,17 +146,17 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T>{
         return true;
     }
 
-    private T getRecursiveHelper(Intnode node, int index){
-        if(node == null || node == senb) {
+    private T getRecursiveHelper(Intnode node, int index) {
+        if (node == null || node == senb) {
             return null;
         }
-        if(index == 0){
+        if (index == 0) {
             return node.item;
         }
-        return getRecursiveHelper(node.next, index-1);
+        return getRecursiveHelper(node.next, index - 1);
     }
 
-    public T getRecursive(int index){
+    public T getRecursive(int index) {
         return getRecursiveHelper(senf.next, index);
     }
 }
