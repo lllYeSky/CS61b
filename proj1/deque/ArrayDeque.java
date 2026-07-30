@@ -43,6 +43,8 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T>{
             a[i] = ar[in];
         }
         ar = a;
+        fir = 0;
+        las = size;
     }
 
     @Override
@@ -82,31 +84,38 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T>{
 
     @Override
     public T removeFirst(){
+        if(size == 0){
+            return null;
+        }
         T t = ar[fir];
         ar[fir] = null;
-        fir++;
+        fir = (fir + 1) % ar.length;
         size--;
-        if(ar.length < size * 0.25){
-            resize(size);
+        if(size < ar.length / 4){
+            resize(ar.length / 2);
         }
         return t;
     }
 
     @Override
     public T removeLast(){
-        T t = ar[las-1];
-        ar[las - 1] = null;
-        las--;
+        if(size == 0){
+            return null;
+        }
+        las = (las - 1 + ar.length) % ar.length;
+        T t = ar[las];
+        ar[las] = null;
         size--;
-        if(ar.length < size * 0.25){
-            resize(size);
+        if(size < ar.length / 4){
+            resize(ar.length / 2);
         }
         return t;
     }
 
     @Override
     public T get(int index){
-        return ar[index];
+        int re = (index + fir) % ar.length;
+        return ar[re];
     }
 
     public Iterator<T> iterator(){
