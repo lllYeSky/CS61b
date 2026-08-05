@@ -1,7 +1,10 @@
 package capers;
 
 import java.io.File;
+import java.util.Arrays;
 
+import static capers.CapersRepository.celebrateBirthday;
+import static capers.CapersRepository.makeDog;
 import static capers.Utils.*;
 
 /** Canine Capers: A Gitlet Prelude.
@@ -27,7 +30,7 @@ public class Main {
      *
      * Recommended structure (you do not have to follow):
      *
-     * *YOU SHOULD NOT CREATE THESE MANUALLY,
+     * *YOU SHOULD NOT CRcEATE THESE MANUALLY,
      *  YOUR PROGRAM SHOULD CREATE THESE FOLDERS/FILES*
      *
      * .capers/ -- top level folder for all persistent data in your lab12 folder
@@ -52,11 +55,11 @@ public class Main {
             break;
         case "dog":
             validateNumArgs("dog", args, 4);
-            // TODO: make a dog
+            makeDog(args[1], args[2], Integer.parseInt(args[3]));
             break;
         case "birthday":
             validateNumArgs("birthday", args, 2);
-            // TODO: celebrate this dog's birthday
+            celebrateBirthday(args[1]);
             break;
         default:
             exitWithError(String.format("Unknown command: %s", args[0]));
