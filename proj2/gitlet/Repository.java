@@ -272,8 +272,8 @@ public class Repository {
             boolean stagehavefile = (!stage.containsKey(file) || stage.get(file).isEmpty());
             boolean tarmaphavefile = tarmap.containsKey(file);
             if (!curmaphavefile && stagehavefile && tarmaphavefile) {
-                error("There is an untracked file in the way;" +
-                        " delete it, or add and commit it first.");
+                error("There is an untracked file in the way;"
+                        + " delete it, or add and commit it first.");
             }
         }
         writeObject(STAGE, new TreeMap<>());
@@ -332,8 +332,8 @@ public class Repository {
             boolean stagehavefile = (!stage.containsKey(file) || stage.get(file).isEmpty());
             boolean tarmaphavefile = tarmap.containsKey(file);
             if (!curmaphavefile && stagehavefile && tarmaphavefile) {
-                error("There is an untracked file in the way;" +
-                        " delete it, or add and commit it first.");
+                error("There is an untracked file in the way;"
+                        + " delete it, or add and commit it first.");
             }
         }
         writeObject(STAGE, new TreeMap<>());
@@ -485,10 +485,9 @@ public class Repository {
         if (cur != null && !cur.equals("0")) {
             content.append(readContentsAsString(join(BLOGS_DIR, cur)));
         }
-        content.append("\n=======\n");
+        content.append("=======\n");
         if (tar != null && !tar.equals("0")) {
             content.append(readContentsAsString(join(BLOGS_DIR, tar)));
-            content.append("\n");
         }
         content.append(">>>>>>>\n");
         String conflictContent = content.toString();
@@ -558,11 +557,8 @@ public class Repository {
         String tar = "";
         List<String> workFiles = plainFilenamesIn(CWD);
         Map<String, String> curmap = curcom.getmap();
-        Map<String, String> tarmap = tarcom.getmap();
         if (workFiles != null) {
-            for (String fileName : workFiles) {
-                File workFile = join(CWD, fileName);
-                String fPath = workFile.getPath();
+            for (String fPath : workFiles) {
                 boolean curmaphavefile = curmap.containsKey(fPath);
                 boolean stagehavefile = (!stage.containsKey(fPath) || stage.get(fPath).isEmpty());
                 if (!curmaphavefile && stagehavefile) {
@@ -580,8 +576,8 @@ public class Repository {
                         result = "conflict";
                     }
                     if (!result.equals("0") || result.equals("conflict")) {
-                        error("There is an untracked file in the way;" +
-                                " delete it, or add and commit it first.");
+                        error("There is an untracked file in the way;"
+                                + " delete it, or add and commit it first.");
                     }
                 }
             }
