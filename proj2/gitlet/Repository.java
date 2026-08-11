@@ -98,7 +98,8 @@ public class Repository {
     }
 
     public static void commit(String info) {
-        TreeMap<String, String> stageMap = STAGE.exists() ? readObject(STAGE, TreeMap.class) : new TreeMap<>();
+        TreeMap<String, String> stageMap =
+                STAGE.exists() ? readObject(STAGE, TreeMap.class) : new TreeMap<>();
         if (stageMap.isEmpty()) {
             error("No changes added to the commit.");
         }
@@ -110,10 +111,16 @@ public class Repository {
         for (Map.Entry<String, String> entry : stageMap.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            newmap.getmap().put(key, value);
+            if (value.equals("")) {
+                newmap.getmap().remove(key);
+            } else {
+                newmap.getmap().put(key, value);
+            }
         }
         newmap.save();
-        writeContents(join(BRANCHS_DIR, readContentsAsString(HEAD).trim()), newmap.getid());
+        String branch = readContentsAsString(HEAD).trim();
+        File branchFile = join(BRANCHS_DIR, branch);
+        writeContents(branchFile, newmap.getid());
         writeObject(STAGE, new TreeMap<>());
     }
 
@@ -185,7 +192,8 @@ public class Repository {
         }
         System.out.println();
         System.out.println("=== Staged Files ===");
-        TreeMap<String, String> stage = STAGE.exists() ? readObject(STAGE, TreeMap.class) : new TreeMap<>();
+        TreeMap<String, String> stage =
+                STAGE.exists() ? readObject(STAGE, TreeMap.class) : new TreeMap<>();
         for (Map.Entry<String, String> entry : stage.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
@@ -256,10 +264,13 @@ public class Repository {
         String tarid = readContentsAsString(join(BRANCHS_DIR, bran));
         Commit tarcom = readObject(join(COMMITS_DIR, tarid), Commit.class);
         Map<String, String> tarmap = tarcom.getmap();
-        TreeMap<String, String> stage = STAGE.exists() ? readObject(STAGE, TreeMap.class) : new TreeMap<>();
+        TreeMap<String, String> stage =
+                STAGE.exists() ? readObject(STAGE, TreeMap.class) : new TreeMap<>();
         List<String> all = plainFilenamesIn(CWD);
         for (String file : all) {
-            if (!curmap.containsKey(file) && (!stage.containsKey(file) || stage.get(file).isEmpty()) && tarmap.containsKey(file)) {
+            if (!curmap.containsKey(file) &&
+                    (!stage.containsKey(file) || stage.get(file).isEmpty()) &&
+                    tarmap.containsKey(file)) {
                 error("There is an untracked file in the way; delete it, or add and commit it first.");
             }
         }
@@ -275,7 +286,7 @@ public class Repository {
         for (Map.Entry<String, String> entry : curmap.entrySet()) {
             String key = entry.getKey();
             if (!tarmap.containsKey(key)) {
-                restrictedDelete(join(CWD, key));
+                join(CWD, key).delete();
             }
         }
         writeContents(HEAD, bran);
@@ -299,7 +310,7 @@ public class Repository {
         if (head.equals(bran)) {
             error("Cannot remove the current branch.");
         }
-        restrictedDelete(join(BRANCHS_DIR, bran));
+        join(BRANCHS_DIR, bran).delete();
     }
 
     public static void reset(String id) {
@@ -310,10 +321,13 @@ public class Repository {
         }
         Map<String, String> tarmap = tarcom.getmap();
         Map<String, String> curmap = curcom.getmap();
-        TreeMap<String, String> stage = STAGE.exists() ? readObject(STAGE, TreeMap.class) : new TreeMap<>();
+        TreeMap<String, String> stage =
+                STAGE.exists() ? readObject(STAGE, TreeMap.class) : new TreeMap<>();
         List<String> work = plainFilenamesIn(CWD);
         for (String file : work) {
-            if (!curmap.containsKey(file) && (!stage.containsKey(file) || stage.get(file).isEmpty()) && tarmap.containsKey(file)) {
+            if (!curmap.containsKey(file) &&
+                    (!stage.containsKey(file) || stage.get(file).isEmpty()) &&
+                    tarmap.containsKey(file)) {
                 error("There is an untracked file in the way; delete it, or add and commit it first.");
             }
         }
@@ -323,42 +337,27 @@ public class Repository {
             String blobHash = entry.getValue();
             File target = join(CWD, path);
             File parent = target.getParentFile();
-            if (parent != null) parent.mkdirs();
+            if (parent != null) {
+                parent.mkdirs();
+            }
             writeContents(target, readContents(join(BLOGS_DIR, blobHash)));
         }
         for (String path : curmap.keySet()) {
             if (!tarmap.containsKey(path)) {
                 File file = join(CWD, path);
-                if (file.exists()) file.delete();
+                if (file.exists()) {
+                    file.delete();
+                }
             }
         }
         writeContents(join(BRANCHS_DIR, readContentsAsString(HEAD).trim()), tarcom.getid());
     }
 
     public static void merge(String bran) {
-        TreeMap<String, String> stage = STAGE.exists() ? readObject(STAGE, TreeMap.class) : new TreeMap<>();
-        if (!stage.isEmpty()) {
-            error("You have uncommitted changes.");
-        }
-        if (checkbranch(bran)) {
-            error("A branch with that name does not exist.");
-        }
-        if (readContentsAsString(HEAD).trim().equals(bran)) {
-            error("Cannot merge a branch with itself.");
-        }
-
+        TreeMap<String, String> stage =
+                STAGE.exists() ? readObject(STAGE, TreeMap.class) : new TreeMap<>();
+        precheck(stage, bran);
         String anceid = conance(bran);
-
-        if (readContentsAsString(join(BRANCHS_DIR, bran)).trim().equals(anceid)) {
-            System.out.println("Given branch is an ancestor of the current branch.");
-            return;
-        }
-        if (getcurrentcommit().getid().trim().equals(anceid)) {
-            checkout2(bran);
-            System.out.println("Current branch fast-forwarded.");
-            return;
-        }
-
         Commit ancecom = idtocommit(anceid);
         Commit curcom = getcurrentcommit();
         Commit tarcom = idtocommit(readContentsAsString(join(BRANCHS_DIR, bran)).trim());
@@ -370,32 +369,7 @@ public class Repository {
         String cur = "";
         String tar = "";
         boolean havecon = false;
-        List<String> workFiles = plainFilenamesIn(CWD);
-        if (workFiles != null) {
-            for (String fileName : workFiles) {
-                File workFile = join(CWD, fileName);
-                String filePath = workFile.getPath();
-                if (!curcom.getmap().containsKey(filePath)
-                        && (!stage.containsKey(filePath) || stage.get(filePath).isEmpty())) {
-                    ance = existid(ancecom, filePath);
-                    cur = existid(curcom, filePath);
-                    tar = existid(tarcom, filePath);
-                    String result;
-                    if (cur.equals(tar)) {
-                        result = cur;
-                    } else if (ance.equals(cur)) {
-                        result = tar;
-                    } else if (ance.equals(tar)) {
-                        result = cur;
-                    } else {
-                        result = "conflict";
-                    }
-                    if (!result.equals("0") || result.equals("conflict")) {
-                        error("There is an untracked file in the way; delete it, or add and commit it first.");
-                    }
-                }
-            }
-        }
+        checkuntrackedfile(ancecom, curcom, tarcom, stage, bran);
         Map<String, String> commap = new TreeMap<>();
         for (String f : allpaths) {
             ance = existid(ancecom, f);
@@ -407,7 +381,9 @@ public class Repository {
                     add(f);
                 } else {
                     File file = join(CWD, f);
-                    if (file.exists()) file.delete();
+                    if (file.exists()) {
+                        file.delete();
+                    }
                     stage.remove(f);
                 }
                 commap.put(f, cur);
@@ -417,7 +393,9 @@ public class Repository {
                     add(f);
                 } else {
                     File file = join(CWD, f);
-                    if (file.exists()) file.delete();
+                    if (file.exists()) {
+                        file.delete();
+                    }
                     stage.remove(f);
                 }
                 commap.put(f, tar);
@@ -427,7 +405,9 @@ public class Repository {
                     add(f);
                 } else {
                     File file = join(CWD, f);
-                    if (file.exists()) file.delete();
+                    if (file.exists()) {
+                        file.delete();
+                    }
                     stage.remove(f);
                 }
                 commap.put(f, cur);
@@ -563,5 +543,62 @@ public class Repository {
             parent.mkdirs();
         }
         writeContents(target, readContents(join(BLOGS_DIR, id)));
+    }
+
+    public static void checkuntrackedfile(Commit ancecom, Commit curcom, Commit tarcom,
+                                          TreeMap<String, String> stage, String bran) {
+        String ance = "";
+        String cur = "";
+        String tar = "";
+        List<String> workFiles = plainFilenamesIn(CWD);
+        if (workFiles != null) {
+            for (String fileName : workFiles) {
+                File workFile = join(CWD, fileName);
+                String filePath = workFile.getPath();
+                if (!curcom.getmap().containsKey(filePath)
+                        && (!stage.containsKey(filePath) || stage.get(filePath).isEmpty())) {
+                    ance = existid(ancecom, filePath);
+                    cur = existid(curcom, filePath);
+                    tar = existid(tarcom, filePath);
+                    String result;
+                    if (cur.equals(tar)) {
+                        result = cur;
+                    } else if (ance.equals(cur)) {
+                        result = tar;
+                    } else if (ance.equals(tar)) {
+                        result = cur;
+                    } else {
+                        result = "conflict";
+                    }
+                    if (!result.equals("0") || result.equals("conflict")) {
+                        error("There is an untracked file in the way; delete it, or add and commit it first.");
+                    }
+                }
+            }
+        }
+    }
+
+    public static void precheck(TreeMap<String, String> stage, String bran) {
+        if (!stage.isEmpty()) {
+            error("You have uncommitted changes.");
+        }
+        if (!checkbranch(bran)) {
+            error("A branch with that name does not exist.");
+        }
+        if (readContentsAsString(HEAD).trim().equals(bran)) {
+            error("Cannot merge a branch with itself.");
+        }
+
+        String anceid = conance(bran);
+
+        if (readContentsAsString(join(BRANCHS_DIR, bran)).trim().equals(anceid)) {
+            System.out.println("Given branch is an ancestor of the current branch.");
+            return;
+        }
+        if (getcurrentcommit().getid().trim().equals(anceid)) {
+            checkout2(bran);
+            System.out.println("Current branch fast-forwarded.");
+            return;
+        }
     }
 }
