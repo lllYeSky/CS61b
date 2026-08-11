@@ -2,8 +2,10 @@ package gitlet;
 
 import static gitlet.Repository.*;
 
-/** Driver class for Gitlet, a subset of the Git version-control system.
- *  @author lllYeSky
+/**
+ * Driver class for Gitlet, a subset of the Git version-control system.
+ *
+ * @author lllYeSky
  */
 public class Main {
 
@@ -14,7 +16,7 @@ public class Main {
             System.exit(0);
         }
         String firstArg = args[0];
-        switch(firstArg) {
+        switch (firstArg) {
             case "init":
                 checkoperands(num, 1);
                 init();
@@ -64,24 +66,21 @@ public class Main {
 
             case "checkout":
                 havegit();
-                if(num == 2){
+                if (num == 2) {
                     checkout2(args[1]);
-                }
-                else if(num == 3){
-                    if(!args[1].equals("--")){
+                } else if (num == 3) {
+                    if (!args[1].equals("--")) {
                         System.out.println("Incorrect operands.");
                         System.exit(0);
                     }
                     checkout3(args[2]);
-                }
-                else if(num == 4){
-                    if(!args[2].equals("--")){
+                } else if (num == 4) {
+                    if (!args[2].equals("--")) {
                         System.out.println("Incorrect operands.");
                         System.exit(0);
                     }
-                    checkout4(args[2], args[3]);
-                }
-                else{
+                    checkout4(args[1], args[3]);
+                } else {
                     System.out.println("Incorrect operands.");
                     System.exit(0);
                 }
@@ -112,20 +111,20 @@ public class Main {
                 break;
 
             default:
-            System.out.println("No command with that name exists.");
-            System.exit(0);
+                System.out.println("No command with that name exists.");
+                System.exit(0);
         }
     }
 
-    public static void havegit(){
-        if(!GITLET_DIR.exists()){
+    public static void havegit() {
+        if (!GITLET_DIR.exists()) {
             System.out.println("Not in an initialized Gitlet directory.");
             System.exit(0);
         }
     }
 
-    public static void checkoperands(int num, int n){
-        if(num != n){
+    public static void checkoperands(int num, int n) {
+        if (num != n) {
             System.out.println("Incorrect operands.");
             System.exit(0);
         }
