@@ -1,0 +1,11 @@
+
+> init
+<<<
+
+E .gitlet
+E .gitlet/objects
+E .gitlet/objects/commits
+E .gitlet/objects/blogs
+E .gitlet/branchs
+E .gitlet/branchs/master
+E .gitlet/head

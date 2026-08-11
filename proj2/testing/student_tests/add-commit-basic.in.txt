@@ -1,0 +1,27 @@
+
+> init
+<<<
+
+
++ f1.txt f1.txt
+> add f1.txt
+<<<
+
+
+> commit "add f1"
+<<<
+
+
+E .gitlet/objects/commits
+
+
+E .gitlet/branchs/master
+
+
++ f2.txt f2.txt
+> add f2.txt
+<<<
+
+
+> commit "add f2"
+<<<

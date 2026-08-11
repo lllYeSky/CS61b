@@ -1,0 +1,25 @@
+
+
+> init
+<<<
+
++ f1.txt f1.txt
+> add f1.txt
+<<<
+> commit "first commit"
+<<<
+
++ f1.txt f1-v2.txt
+> add f1.txt
+<<<
+
+
+> commit "update f1"
+<<<
+
+> add f1.txt
+<<<
+
+> commit "empty"
+<<<
+No changes added to the commit.
