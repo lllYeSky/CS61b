@@ -36,7 +36,7 @@ public class Commit implements Serializable {
         parentHash = new ArrayList<>();
         pathtohash = new TreeMap<>();
         datestamp = datetotimestamp(date);
-        id = sha1(message, datestamp, parentHash, maptostring(pathtohash));
+        id = sha1(message, datestamp, parentHash.toString(), maptostring(pathtohash));
     }
 
     public Commit(String me, String pa, Map<String, String> parentmap){
@@ -46,7 +46,7 @@ public class Commit implements Serializable {
         parentHash.add(pa);
         pathtohash =  new TreeMap<>(parentmap);
         datestamp = datetotimestamp(date);
-        id = sha1(message, datestamp, parentHash, maptostring(pathtohash));
+        id = sha1(message, datestamp, parentHash.toString(), maptostring(pathtohash));
     }
 
     public Commit(String me, String pa1, String pa2, Map<String, String> parentmap){

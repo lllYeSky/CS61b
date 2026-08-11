@@ -7,9 +7,6 @@ import static gitlet.Repository.*;
  */
 public class Main {
 
-    /** Usage: java gitlet.Main ARGS, where ARGS contains
-     *  <COMMAND> <OPERAND1> <OPERAND2> ... 
-     */
     public static void main(String[] args) {
         int num = args.length;
         if (num == 0) {
