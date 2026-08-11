@@ -84,12 +84,12 @@ public class Commit implements Serializable {
 
     public void printlog() {
         System.out.println("===");
+        System.out.println("commit " + id);
         if (parentHash.size() > 1) {
             String p1 = parentHash.get(0).substring(0, 7);
             String p2 = parentHash.get(1).substring(0, 7);
             System.out.println("Merge: " + p1 + " " + p2);
         }
-        System.out.println("commit " + id);
         System.out.println("Date: " + datestamp);
         System.out.println(message);
         System.out.println();

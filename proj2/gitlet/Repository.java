@@ -268,10 +268,12 @@ public class Repository {
                 STAGE.exists() ? readObject(STAGE, TreeMap.class) : new TreeMap<>();
         List<String> all = plainFilenamesIn(CWD);
         for (String file : all) {
-            if (!curmap.containsKey(file) &&
-                    (!stage.containsKey(file) || stage.get(file).isEmpty()) &&
-                    tarmap.containsKey(file)) {
-                error("There is an untracked file in the way; delete it, or add and commit it first.");
+            boolean curmaphavefile = curmap.containsKey(file);
+            boolean stagehavefile = (!stage.containsKey(file) || stage.get(file).isEmpty());
+            boolean tarmaphavefile = tarmap.containsKey(file);
+            if (!curmaphavefile && stagehavefile && tarmaphavefile) {
+                error("There is an untracked file in the way;" +
+                        " delete it, or add and commit it first.");
             }
         }
         writeObject(STAGE, new TreeMap<>());
@@ -297,7 +299,8 @@ public class Repository {
         if (allbran != null && allbran.contains(bran)) {
             error("A branch with that name already exists.");
         }
-        String id = readContentsAsString(join(BRANCHS_DIR, readContentsAsString(HEAD).trim())).trim();
+        File curbran = join(BRANCHS_DIR, readContentsAsString(HEAD).trim());
+        String id = readContentsAsString(curbran).trim();
         writeContents(join(BRANCHS_DIR, bran), id);
     }
 
@@ -325,10 +328,12 @@ public class Repository {
                 STAGE.exists() ? readObject(STAGE, TreeMap.class) : new TreeMap<>();
         List<String> work = plainFilenamesIn(CWD);
         for (String file : work) {
-            if (!curmap.containsKey(file) &&
-                    (!stage.containsKey(file) || stage.get(file).isEmpty()) &&
-                    tarmap.containsKey(file)) {
-                error("There is an untracked file in the way; delete it, or add and commit it first.");
+            boolean curmaphavefile = curmap.containsKey(file);
+            boolean stagehavefile = (!stage.containsKey(file) || stage.get(file).isEmpty());
+            boolean tarmaphavefile = tarmap.containsKey(file);
+            if (!curmaphavefile && stagehavefile && tarmaphavefile) {
+                error("There is an untracked file in the way;" +
+                        " delete it, or add and commit it first.");
             }
         }
         writeObject(STAGE, new TreeMap<>());
@@ -379,6 +384,7 @@ public class Repository {
                 if (!cur.equals("0")) {
                     checkoutFileFromCommit(tarcom, f);
                     add(f);
+                    commap.put(f, cur);
                 } else {
                     File file = join(CWD, f);
                     if (file.exists()) {
@@ -386,11 +392,11 @@ public class Repository {
                     }
                     stage.remove(f);
                 }
-                commap.put(f, cur);
             } else if (ance.equals(cur)) {
                 if (!tar.equals("0")) {
                     checkoutFileFromCommit(tarcom, f);
                     add(f);
+                    commap.put(f, tar);
                 } else {
                     File file = join(CWD, f);
                     if (file.exists()) {
@@ -398,11 +404,11 @@ public class Repository {
                     }
                     stage.remove(f);
                 }
-                commap.put(f, tar);
             } else if (ance.equals(tar)) {
                 if (!cur.equals("0")) {
                     checkoutFileFromCommit(curcom, f);
                     add(f);
+                    commap.put(f, cur);
                 } else {
                     File file = join(CWD, f);
                     if (file.exists()) {
@@ -410,7 +416,6 @@ public class Repository {
                     }
                     stage.remove(f);
                 }
-                commap.put(f, cur);
             } else {
                 conflict(f, cur, tar);
                 commap.put(f, sha1(readContents(join(CWD, f))));
@@ -483,8 +488,9 @@ public class Repository {
         content.append("\n=======\n");
         if (tar != null && !tar.equals("0")) {
             content.append(readContentsAsString(join(BLOGS_DIR, tar)));
+            content.append("\n");
         }
-        content.append("\n>>>>>>>\n");
+        content.append(">>>>>>>\n");
         String conflictContent = content.toString();
 
         String blobHash = sha1(conflictContent);
@@ -551,15 +557,18 @@ public class Repository {
         String cur = "";
         String tar = "";
         List<String> workFiles = plainFilenamesIn(CWD);
+        Map<String, String> curmap = curcom.getmap();
+        Map<String, String> tarmap = tarcom.getmap();
         if (workFiles != null) {
             for (String fileName : workFiles) {
                 File workFile = join(CWD, fileName);
-                String filePath = workFile.getPath();
-                if (!curcom.getmap().containsKey(filePath)
-                        && (!stage.containsKey(filePath) || stage.get(filePath).isEmpty())) {
-                    ance = existid(ancecom, filePath);
-                    cur = existid(curcom, filePath);
-                    tar = existid(tarcom, filePath);
+                String fPath = workFile.getPath();
+                boolean curmaphavefile = curmap.containsKey(fPath);
+                boolean stagehavefile = (!stage.containsKey(fPath) || stage.get(fPath).isEmpty());
+                if (!curmaphavefile && stagehavefile) {
+                    ance = existid(ancecom, fPath);
+                    cur = existid(curcom, fPath);
+                    tar = existid(tarcom, fPath);
                     String result;
                     if (cur.equals(tar)) {
                         result = cur;
@@ -571,7 +580,8 @@ public class Repository {
                         result = "conflict";
                     }
                     if (!result.equals("0") || result.equals("conflict")) {
-                        error("There is an untracked file in the way; delete it, or add and commit it first.");
+                        error("There is an untracked file in the way;" +
+                                " delete it, or add and commit it first.");
                     }
                 }
             }
@@ -592,13 +602,11 @@ public class Repository {
         String anceid = conance(bran);
 
         if (readContentsAsString(join(BRANCHS_DIR, bran)).trim().equals(anceid)) {
-            System.out.println("Given branch is an ancestor of the current branch.");
-            return;
+            error("Given branch is an ancestor of the current branch.");
         }
         if (getcurrentcommit().getid().trim().equals(anceid)) {
             checkout2(bran);
-            System.out.println("Current branch fast-forwarded.");
-            return;
+            error("Current branch fast-forwarded.");
         }
     }
 }
