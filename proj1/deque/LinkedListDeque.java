@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class LinkedListDeque<T> implements Iterable<T>, Deque<T>{
+public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
     private Intnode senf;
     private Intnode senb;
     private int size;
@@ -13,10 +13,10 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T>{
         private T item;
     }
 
-    private class LLDiterator implements Iterator<T>{
+    private class LLDiterator implements Iterator<T> {
         private Intnode current;
 
-        public LLDiterator() {
+        LLDiterator() {
             current = senf.next;
         }
 

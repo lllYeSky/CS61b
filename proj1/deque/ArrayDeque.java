@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque<T> implements Iterable<T>, Deque<T>{
+public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     private T[] ar;
     private int size, fir, las;
 
@@ -12,10 +12,10 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T>{
         fir = las = 3;
     }
 
-    private class ADiterator implements Iterator<T>{
+    private class ADiterator implements Iterator<T> {
         private int cur;
 
-        public ADiterator() {
+        ADiterator() {
             cur = 0;
         }
 
