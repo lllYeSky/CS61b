@@ -212,8 +212,10 @@ public class Repository {
         }
         System.out.println();
         System.out.println("=== Modifications Not Staged For Commit ===");
+        ModifiedNotStaged();
         System.out.println();
         System.out.println("=== Untracked Files ===");
+        untracked();
         System.out.println();
     }
 
@@ -603,6 +605,89 @@ public class Repository {
         if (getcurrentcommit().getid().trim().equals(anceid)) {
             checkout2(bran);
             error("Current branch fast-forwarded.");
+        }
+    }
+
+    public static void ModifiedNotStaged() {
+        TreeMap<String, String> stageMap =
+                STAGE.exists() ? readObject(STAGE, TreeMap.class) : new TreeMap<>();
+        Map<String, String> commap = getcurrentcommit().getmap();
+        List<String> workfile = plainFilenamesIn(CWD);
+
+        Set<String> allPaths = new TreeSet<>();
+        if (workfile != null) allPaths.addAll(workfile);
+        allPaths.addAll(commap.keySet());
+        allPaths.addAll(stageMap.keySet());
+
+        for (String file : allPaths) {
+            if (MNS1(stageMap, file, commap) || MNS2(stageMap, file, commap)) {
+                System.out.println(file + " (modified)");
+            } else if (MNS3(stageMap, file, commap) || MNS4(stageMap, file, commap)) {
+                System.out.println(file + " (deleted)");
+            }
+        }
+    }
+
+    public static boolean MNS1(TreeMap<String, String> stageMap, String file,
+                               Map<String, String> commap) {
+        File f = join(CWD, file);
+        if (!f.exists()) {
+            return false;
+        }
+        String cwdhash = sha1(readContents(f));
+        boolean hashnotequal = !cwdhash.equals(commap.get(file));
+        if (commap.containsKey(file) && hashnotequal && !stageMap.containsKey(file)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean MNS2(TreeMap<String, String> stageMap, String file,
+                               Map<String, String> commap) {
+        File f = join(CWD, file);
+        if (!f.exists()) {
+            return false;
+        }
+        if (!stageMap.containsKey(file)) {
+            return false;
+        }
+        String cwdhash = sha1(readContents(f));
+        boolean hashnotequal = !cwdhash.equals(stageMap.get(file));
+        return hashnotequal;
+    }
+
+    public static boolean MNS3(TreeMap<String, String> stageMap, String file,
+                               Map<String, String> commap) {
+        File f = join(CWD, file);
+        if (!f.exists()) {
+            if (stageMap.containsKey(file) && !stageMap.get(file).isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean MNS4(TreeMap<String, String> stageMap, String file,
+                               Map<String, String> commap) {
+        File f = join(CWD, file);
+        if (f.exists()) {
+            return false;
+        }
+        if (stageMap.containsKey(file)) {
+            return false;
+        }
+        return commap.containsKey(file);
+    }
+
+    public static void untracked() {
+        TreeMap<String, String> stageMap =
+                STAGE.exists() ? readObject(STAGE, TreeMap.class) : new TreeMap<>();
+        Map<String, String> commap = getcurrentcommit().getmap();
+        List<String> workfile = plainFilenamesIn(CWD);
+        for (String file : workfile) {
+            if (!commap.containsKey(file) && !stageMap.containsKey(file)) {
+                System.out.println(file);
+            }
         }
     }
 }
