@@ -212,7 +212,7 @@ public class Repository {
         }
         System.out.println();
         System.out.println("=== Modifications Not Staged For Commit ===");
-        ModifiedNotStaged();
+        modifiedNotStaged();
         System.out.println();
         System.out.println("=== Untracked Files ===");
         untracked();
@@ -608,27 +608,29 @@ public class Repository {
         }
     }
 
-    public static void ModifiedNotStaged() {
+    public static void modifiedNotStaged() {
         TreeMap<String, String> stageMap =
                 STAGE.exists() ? readObject(STAGE, TreeMap.class) : new TreeMap<>();
         Map<String, String> commap = getcurrentcommit().getmap();
         List<String> workfile = plainFilenamesIn(CWD);
 
         Set<String> allPaths = new TreeSet<>();
-        if (workfile != null) allPaths.addAll(workfile);
+        if (workfile != null) {
+            allPaths.addAll(workfile);
+        }
         allPaths.addAll(commap.keySet());
         allPaths.addAll(stageMap.keySet());
 
         for (String file : allPaths) {
-            if (MNS1(stageMap, file, commap) || MNS2(stageMap, file, commap)) {
+            if (mns1(stageMap, file, commap) || mns2(stageMap, file, commap)) {
                 System.out.println(file + " (modified)");
-            } else if (MNS3(stageMap, file, commap) || MNS4(stageMap, file, commap)) {
+            } else if (mns3(stageMap, file, commap) || mns4(stageMap, file, commap)) {
                 System.out.println(file + " (deleted)");
             }
         }
     }
 
-    public static boolean MNS1(TreeMap<String, String> stageMap, String file,
+    public static boolean mns1(TreeMap<String, String> stageMap, String file,
                                Map<String, String> commap) {
         File f = join(CWD, file);
         if (!f.exists()) {
@@ -642,7 +644,7 @@ public class Repository {
         return false;
     }
 
-    public static boolean MNS2(TreeMap<String, String> stageMap, String file,
+    public static boolean mns2(TreeMap<String, String> stageMap, String file,
                                Map<String, String> commap) {
         File f = join(CWD, file);
         if (!f.exists()) {
@@ -656,7 +658,7 @@ public class Repository {
         return hashnotequal;
     }
 
-    public static boolean MNS3(TreeMap<String, String> stageMap, String file,
+    public static boolean mns3(TreeMap<String, String> stageMap, String file,
                                Map<String, String> commap) {
         File f = join(CWD, file);
         if (!f.exists()) {
@@ -667,7 +669,7 @@ public class Repository {
         return false;
     }
 
-    public static boolean MNS4(TreeMap<String, String> stageMap, String file,
+    public static boolean mns4(TreeMap<String, String> stageMap, String file,
                                Map<String, String> commap) {
         File f = join(CWD, file);
         if (f.exists()) {
