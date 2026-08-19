@@ -49,7 +49,7 @@ public class Repository {
     /**
      * remote目录
      */
-    public static File REMOTES_DIR = join(GITLET_DIR, "remotes");
+    public static final File REMOTES_DIR = join(GITLET_DIR, "remotes");
 
     public static void init() {
         if (GITLET_DIR.exists()) {
@@ -453,6 +453,8 @@ public class Repository {
         join(REMOTES_DIR, remotename).delete();
     }
 
+
+    
     // 辅助方法
     public static Commit getcurrentcommit() {
         String branch = readContentsAsString(HEAD).trim();
