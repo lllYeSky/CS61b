@@ -5,7 +5,6 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static gitlet.Utils.*;
-import static java.nio.file.Paths.get;
 
 /**
  * Represents a gitlet repository.
@@ -14,44 +13,39 @@ import static java.nio.file.Paths.get;
  * @author lllYeSky
  */
 public class Repository {
-
     /**
      * The current working directory.
      */
-    public static File CWD = new File(System.getProperty("user.dir"));
+    public static final File CWD = new File(System.getProperty("user.dir"));
     /**
      * The .gitlet directory.
      */
-    public static File GITLET_DIR = join(CWD, ".gitlet");
+    public static final File GITLET_DIR = join(CWD, ".gitlet");
 
     /**
      * obj目录，放 commit 和 blog
      */
-    public static File OBJECTS_DIR = join(GITLET_DIR, "objects");
+    public static final File OBJECTS_DIR = join(GITLET_DIR, "objects");
     /**
      * commit目录
      */
-    public static File COMMITS_DIR = join(OBJECTS_DIR, "commits");
+    public static final File COMMITS_DIR = join(OBJECTS_DIR, "commits");
     /**
      * blog目录
      */
-    public static File BLOGS_DIR = join(OBJECTS_DIR, "blogs");
-
+    public static final File BLOGS_DIR = join(OBJECTS_DIR, "blogs");
     /**
      * branch目录
      */
-    public static File BRANCHS_DIR = join(GITLET_DIR, "branchs");
-
+    public static final File BRANCHS_DIR = join(GITLET_DIR, "branchs");
     /**
      * HEAD
      */
-    public static File HEAD = join(GITLET_DIR, "head");
-
+    public static final File HEAD = join(GITLET_DIR, "head");
     /**
      * stage目录
      */
-    public static File STAGE = join(GITLET_DIR, "stage");
-
+    public static final File STAGE = join(GITLET_DIR, "stage");
     /**
      * remote目录
      */
