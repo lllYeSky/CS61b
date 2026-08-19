@@ -16,16 +16,6 @@ import static gitlet.Utils.*;
  * @author lllYeSky
  */
 public class Commit implements Serializable {
-    /**
-     *
-     * List all instance variables of the Commit class here with a useful
-     * comment above them describing what that variable represents and how that
-     * variable is used. We've provided one example for `message`.
-     */
-
-    /**
-     * The message of this Commit.
-     */
     private final String message;
     private final Date date;
     private final String datestamp;

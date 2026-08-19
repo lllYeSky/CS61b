@@ -110,6 +110,16 @@ public class Main {
                 merge(args[1]);
                 break;
 
+            case "add-remote":
+                checkoperands(num, 3);
+                havegit();
+                addremote(args[1], args[2]);
+
+            case "rm-remote":
+                checkoperands(num, 2);
+                havegit();
+                rmremote(args[1]);
+
             default:
                 System.out.println("No command with that name exists.");
                 System.exit(0);

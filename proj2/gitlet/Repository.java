@@ -1,9 +1,11 @@
 package gitlet;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.*;
 
 import static gitlet.Utils.*;
+import static java.nio.file.Paths.get;
 
 /**
  * Represents a gitlet repository.
@@ -16,39 +18,44 @@ public class Repository {
     /**
      * The current working directory.
      */
-    public static final File CWD = new File(System.getProperty("user.dir"));
+    public static File CWD = new File(System.getProperty("user.dir"));
     /**
      * The .gitlet directory.
      */
-    public static final File GITLET_DIR = join(CWD, ".gitlet");
+    public static File GITLET_DIR = join(CWD, ".gitlet");
 
     /**
      * obj目录，放 commit 和 blog
      */
-    public static final File OBJECTS_DIR = join(GITLET_DIR, "objects");
+    public static File OBJECTS_DIR = join(GITLET_DIR, "objects");
     /**
      * commit目录
      */
-    public static final File COMMITS_DIR = join(OBJECTS_DIR, "commits");
+    public static File COMMITS_DIR = join(OBJECTS_DIR, "commits");
     /**
      * blog目录
      */
-    public static final File BLOGS_DIR = join(OBJECTS_DIR, "blogs");
+    public static File BLOGS_DIR = join(OBJECTS_DIR, "blogs");
 
     /**
      * branch目录
      */
-    public static final File BRANCHS_DIR = join(GITLET_DIR, "branchs");
+    public static File BRANCHS_DIR = join(GITLET_DIR, "branchs");
 
     /**
      * HEAD
      */
-    public static final File HEAD = join(GITLET_DIR, "head");
+    public static File HEAD = join(GITLET_DIR, "head");
 
     /**
      * stage目录
      */
-    public static final File STAGE = join(GITLET_DIR, "stage");
+    public static File STAGE = join(GITLET_DIR, "stage");
+
+    /**
+     * remote目录
+     */
+    public static File REMOTES_DIR = join(GITLET_DIR, "remotes");
 
     public static void init() {
         if (GITLET_DIR.exists()) {
@@ -59,6 +66,7 @@ public class Repository {
         COMMITS_DIR.mkdirs();
         BLOGS_DIR.mkdirs();
         BRANCHS_DIR.mkdirs();
+        REMOTES_DIR.mkdirs();
         Commit start = new Commit();
         start.save();
         File master = join(BRANCHS_DIR, "master");
@@ -435,6 +443,23 @@ public class Repository {
         }
     }
 
+    public static void addremote(String remotename, String remotepath) {
+        REMOTES_DIR.mkdirs();
+        if (join(REMOTES_DIR, remotename).exists()) {
+            error("A remote with that name already exists.");
+        }
+        String path = Paths.get(remotepath).normalize().toString();
+        writeContents(join(REMOTES_DIR, remotename), path);
+    }
+
+    public static void rmremote(String remotename) {
+        if (!join(REMOTES_DIR, remotename).exists()) {
+            error("A remote with that name does not exist.");
+        }
+        join(REMOTES_DIR, remotename).delete();
+    }
+
+    // 辅助方法
     public static Commit getcurrentcommit() {
         String branch = readContentsAsString(HEAD).trim();
         String hash = readContentsAsString(join(BRANCHS_DIR, branch)).trim();
